@@ -1,0 +1,16 @@
+:root {
+  --background: #000000;
+  --foreground: #dadade;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-geist-sans);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
