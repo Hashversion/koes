@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "next start",
+    "start": "pnpm dlx serve@latest out",
     "lint": "eslint --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit"
   },
