@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@source "../**/*.{ts,tsx}";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+}
+
+@layer base {
+  body {
+    background-color: black;
+    color: #dadade;
+  }
+}

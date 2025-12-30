@@ -37,5 +37,9 @@
     "**/app/**/page.tsx": "${dirname} - page",
     "**/app/**/layout.tsx": "${dirname} - layout",
     "**/components/**/index.tsx": "${dirname} - component"
+  },
+  "tailwindCSS.classFunctions": ["cva", "cx"],
+  "files.associations": {
+    "*.css": "tailwindcss"
   }
 }
