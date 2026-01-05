@@ -1,3 +1,5 @@
+import { domAnimation, LazyMotion } from "motion/react";
+import * as m from "motion/react-m";
 import { fontsVariable } from "@repo/ui/styles/fonts";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
@@ -23,7 +25,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={fontsVariable}>
-      <body className="font-geist-sans antialiased">{children}</body>
+      <LazyMotion features={domAnimation}>
+        <m.body
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.23, ease: [0.455, 0.03, 0.515, 0.955] }}
+          className="font-geist-sans antialiased"
+        >
+          {children}
+        </m.body>
+      </LazyMotion>
     </html>
   );
 }
