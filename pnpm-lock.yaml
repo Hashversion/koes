@@ -113,6 +113,9 @@ importers:
 
   packages/ui:
     dependencies:
+      next:
+        specifier: 16.1.0
+        version: 16.1.0(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: ^19.2.0
         version: 19.2.0

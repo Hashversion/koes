@@ -7,7 +7,10 @@
 
 @layer base {
   body {
-    background-color: black;
-    color: #dadade;
+    @apply bg-black text-[#dadade];
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
