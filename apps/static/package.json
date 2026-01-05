@@ -1,21 +1,21 @@
 {
   "name": "static",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "pnpm dlx serve@latest out",
+    "dev": "next dev --port 3000",
     "lint": "eslint --max-warnings 0",
+    "start": "pnpm dlx serve@latest out",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
     "motion": "^12.23.27",
-    "next": "16.1.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -25,6 +25,6 @@
     "@types/react-dom": "19.2.2",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.1",
-    "typescript": "5.9.2"
+    "typescript": "catalog:"
   }
 }
