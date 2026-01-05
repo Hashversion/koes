@@ -2,7 +2,7 @@ import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { fontsVariable } from "@repo/ui/styles/fonts";
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import "./styles.css";
 
 export const metadata: Metadata = {
   title: {
