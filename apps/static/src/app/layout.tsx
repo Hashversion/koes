@@ -6,8 +6,22 @@ import "./styles.css";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s :: Koes",
-    default: "Koes",
+    template: "%s :: KOES",
+    default: "KOES",
+  },
+  icons: {
+    icon: [
+      {
+        media: "(prefers-color-scheme: light)",
+        url: "/images/favicon-dark.png",
+        href: "/images/favicon-dark.png",
+      },
+      {
+        media: "(prefers-color-scheme: dark)",
+        url: "/images/favicon-light.png",
+        href: "/images/favicon-light.png",
+      },
+    ],
   },
 };
 
