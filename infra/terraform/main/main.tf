@@ -7,6 +7,15 @@ terraform {
       version = "~> 6.28.0"
     }
   }
+
+  backend "s3" {
+    profile      = "main"
+    bucket       = "koes-terraform-state"
+    key          = "main/terraform.tfstate"
+    region       = "ap-south-1"
+    use_lockfile = true
+    encrypt      = true
+  }
 }
 
 locals {
