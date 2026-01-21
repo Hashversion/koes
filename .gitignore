@@ -36,3 +36,9 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Terraform
+.terraform/
+*.tfstate*
+.terraform.lock.hcl
+terraform.tfvars
