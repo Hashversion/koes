@@ -7,6 +7,9 @@ resource "aws_iam_openid_connect_provider" "github" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [data.tls_certificate.github_oidc.certificates[0].sha1_fingerprint]
 
+  lifecycle {
+    prevent_destroy = true
+  }
 
   tags = merge(local.common_tags, {
     Name = "GitHub Actions OIDC Provider"
@@ -158,6 +161,10 @@ resource "aws_iam_policy" "github_actions_deployment" {
 resource "aws_iam_role" "github_actions_oidc" {
   name        = var.github_actions_iam_role_name
   description = "IAM role for GitHub Actions OIDC authentication and cross-account deployments"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
