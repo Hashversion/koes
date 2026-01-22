@@ -15,54 +15,17 @@ resource "aws_iam_openid_connect_provider" "github" {
 
 # Policy for managing infrastructure resources (S3, IAM, OIDC)
 data "aws_iam_policy_document" "github_actions_infrastructure" {
-  # S3 bucket management for Terraform state bucket
+  # Full S3 access for Terraform state bucket
   statement {
-    sid    = "S3BucketManagement"
+    sid    = "S3FullBucketAccess"
     effect = "Allow"
     actions = [
-      "s3:CreateBucket",
-      "s3:GetBucketLocation",
-      "s3:GetBucketVersioning",
-      "s3:PutBucketVersioning",
-      "s3:GetBucketPolicy",
-      "s3:PutBucketPolicy",
-      "s3:DeleteBucketPolicy",
-      "s3:GetBucketPublicAccessBlock",
-      "s3:PutBucketPublicAccessBlock",
-      "s3:GetBucketEncryption",
-      "s3:PutBucketEncryption",
-      "s3:GetEncryptionConfiguration",
-      "s3:PutEncryptionConfiguration",
-      "s3:GetLifecycleConfiguration",
-      "s3:PutLifecycleConfiguration",
-      "s3:GetBucketCORS",
-      "s3:PutBucketCORS",
-      "s3:DeleteBucketCORS",
-      "s3:ListBucket",
-      "s3:GetBucketTagging",
-      "s3:PutBucketTagging",
-      "s3:GetBucketAcl",
-      "s3:PutBucketAcl"
+      "s3:*"
     ]
     resources = [
       "arn:aws:s3:::${var.terraform_state_bucket}",
       "arn:aws:s3:::${var.terraform_state_bucket}/*"
     ]
-  }
-
-  # S3 object access for Terraform state files
-  statement {
-    sid    = "TerraformStateObjectAccess"
-    effect = "Allow"
-    actions = [
-      "s3:GetObject",
-      "s3:PutObject",
-      "s3:DeleteObject",
-      "s3:GetObjectVersion",
-      "s3:GetObjectAcl",
-      "s3:PutObjectAcl"
-    ]
-    resources = ["arn:aws:s3:::${var.terraform_state_bucket}/*"]
   }
 
   # IAM OIDC Provider management
