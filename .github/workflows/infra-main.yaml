@@ -29,6 +29,12 @@ jobs:
     defaults:
       run:
         working-directory: infra/terraform/main
+    env:
+      TF_VAR_aws_region: 'ap-south-1'
+      TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
+      TF_VAR_github_repo_owner: 'Hashversion'
+      TF_VAR_github_repo_name: 'koes'
+      TF_VAR_env_account_ids: ${{ secrets.TF_VAR_env_account_ids }}
 
     steps:
       - name: Checkout code
@@ -39,17 +45,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Set Terraform variables
-        env:
-          TF_VAR_aws_region: ${{ env.AWS_REGION }}
-          TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
-          TF_VAR_github_repo_owner: 'Hashversion'
-          TF_VAR_github_repo_name: 'koes'
-          TF_VAR_env_account_ids: ${{ secrets.TF_VAR_env_account_ids }}
-        run: |
-          echo "Terraform variables set via TF_VAR_* environment variables"
-          # Note: TF_VAR_env_account_ids must be JSON: {"development":"111111111111","staging":"222222222222","production":"333333333333"}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -76,6 +71,12 @@ jobs:
     defaults:
       run:
         working-directory: infra/terraform/main
+    env:
+      TF_VAR_aws_region: 'ap-south-1'
+      TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
+      TF_VAR_github_repo_owner: 'Hashversion'
+      TF_VAR_github_repo_name: 'koes'
+      TF_VAR_env_account_ids: ${{ secrets.TF_VAR_env_account_ids }}
 
     steps:
       - name: Checkout code
@@ -86,17 +87,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Set Terraform variables
-        env:
-          TF_VAR_aws_region: ${{ env.AWS_REGION }}
-          TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
-          TF_VAR_github_repo_owner: 'Hashversion'
-          TF_VAR_github_repo_name: 'koes'
-          TF_VAR_env_account_ids: ${{ secrets.TF_VAR_env_account_ids }}
-        run: |
-          echo "Terraform variables set via TF_VAR_* environment variables"
-          # Note: TF_VAR_env_account_ids must be JSON: {"development":"111111111111","staging":"222222222222","production":"333333333333"}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
