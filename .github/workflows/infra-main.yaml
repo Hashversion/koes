@@ -1,0 +1,110 @@
+name: Terraform - Main Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/terraform/main/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'infra/terraform/main/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: 'ap-south-1'
+  GITHUB_ACTIONS_ROLE_NAME: 'GitHubActionsOIDCRole'
+  TF_VERSION: '1.14.3'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan - Main
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/terraform/main
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set Terraform variables
+        env:
+          TF_VAR_aws_region: ${{ env.AWS_REGION }}
+          TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
+          TF_VAR_github_repo_owner: 'Hashversion'
+          TF_VAR_github_repo_name: 'koes'
+          TF_VAR_env_account_ids: ${{ secrets.TF_VAR_env_account_ids }}
+        run: |
+          echo "Terraform variables set via TF_VAR_* environment variables"
+          # Note: TF_VAR_env_account_ids must be JSON: {"development":"111111111111","staging":"222222222222","production":"333333333333"}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+  terraform-apply:
+    name: Terraform Apply - Main
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    defaults:
+      run:
+        working-directory: infra/terraform/main
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set Terraform variables
+        env:
+          TF_VAR_aws_region: ${{ env.AWS_REGION }}
+          TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
+          TF_VAR_github_repo_owner: 'Hashversion'
+          TF_VAR_github_repo_name: 'koes'
+          TF_VAR_env_account_ids: ${{ secrets.TF_VAR_env_account_ids }}
+        run: |
+          echo "Terraform variables set via TF_VAR_* environment variables"
+          # Note: TF_VAR_env_account_ids must be JSON: {"development":"111111111111","staging":"222222222222","production":"333333333333"}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
