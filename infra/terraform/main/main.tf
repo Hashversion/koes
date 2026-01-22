@@ -14,7 +14,6 @@ terraform {
   }
 
   backend "s3" {
-    profile      = "main"
     bucket       = "koes-terraform-state"
     key          = "main/terraform.tfstate"
     region       = "ap-south-1"
