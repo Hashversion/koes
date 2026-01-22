@@ -13,6 +13,130 @@ resource "aws_iam_openid_connect_provider" "github" {
   })
 }
 
+# Policy for managing infrastructure resources (S3, IAM, OIDC)
+data "aws_iam_policy_document" "github_actions_infrastructure" {
+  # S3 bucket management for Terraform state bucket
+  statement {
+    sid    = "S3BucketManagement"
+    effect = "Allow"
+    actions = [
+      "s3:CreateBucket",
+      "s3:GetBucketLocation",
+      "s3:GetBucketVersioning",
+      "s3:PutBucketVersioning",
+      "s3:GetBucketPolicy",
+      "s3:PutBucketPolicy",
+      "s3:DeleteBucketPolicy",
+      "s3:GetBucketPublicAccessBlock",
+      "s3:PutBucketPublicAccessBlock",
+      "s3:GetBucketEncryption",
+      "s3:PutBucketEncryption",
+      "s3:GetEncryptionConfiguration",
+      "s3:PutEncryptionConfiguration",
+      "s3:GetLifecycleConfiguration",
+      "s3:PutLifecycleConfiguration",
+      "s3:ListBucket",
+      "s3:GetBucketTagging",
+      "s3:PutBucketTagging",
+      "s3:GetBucketAcl",
+      "s3:PutBucketAcl"
+    ]
+    resources = [
+      "arn:aws:s3:::${var.terraform_state_bucket}",
+      "arn:aws:s3:::${var.terraform_state_bucket}/*"
+    ]
+  }
+
+  # S3 object access for Terraform state files
+  statement {
+    sid    = "TerraformStateObjectAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+      "s3:GetObjectVersion",
+      "s3:GetObjectAcl",
+      "s3:PutObjectAcl"
+    ]
+    resources = ["arn:aws:s3:::${var.terraform_state_bucket}/*"]
+  }
+
+  # IAM OIDC Provider management
+  statement {
+    sid    = "IAMOIDCProviderManagement"
+    effect = "Allow"
+    actions = [
+      "iam:CreateOpenIDConnectProvider",
+      "iam:GetOpenIDConnectProvider",
+      "iam:UpdateOpenIDConnectProvider",
+      "iam:DeleteOpenIDConnectProvider",
+      "iam:ListOpenIDConnectProviders",
+      "iam:TagOpenIDConnectProvider",
+      "iam:UntagOpenIDConnectProvider"
+    ]
+    resources = [
+      "arn:aws:iam::*:oidc-provider/token.actions.githubusercontent.com"
+    ]
+  }
+
+  # IAM Policy management
+  statement {
+    sid    = "IAMPolicyManagement"
+    effect = "Allow"
+    actions = [
+      "iam:CreatePolicy",
+      "iam:GetPolicy",
+      "iam:GetPolicyVersion",
+      "iam:ListPolicyVersions",
+      "iam:DeletePolicy",
+      "iam:TagPolicy",
+      "iam:UntagPolicy"
+    ]
+    resources = [
+      "arn:aws:iam::*:policy/${var.github_actions_iam_role_name}-deployment-policy",
+      "arn:aws:iam::*:policy/${var.github_actions_iam_role_name}-infrastructure-policy"
+    ]
+  }
+
+  # IAM Role management
+  statement {
+    sid    = "IAMRoleManagement"
+    effect = "Allow"
+    actions = [
+      "iam:CreateRole",
+      "iam:GetRole",
+      "iam:UpdateRole",
+      "iam:DeleteRole",
+      "iam:UpdateAssumeRolePolicy",
+      "iam:GetRolePolicy",
+      "iam:PutRolePolicy",
+      "iam:DeleteRolePolicy",
+      "iam:ListRolePolicies",
+      "iam:AttachRolePolicy",
+      "iam:DetachRolePolicy",
+      "iam:ListAttachedRolePolicies",
+      "iam:TagRole",
+      "iam:UntagRole"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/${var.github_actions_iam_role_name}"
+    ]
+  }
+
+  # Cross-account deployment access
+  statement {
+    sid     = "CrossAccountDeploymentAccess"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    resources = [
+      for account_id in values(var.env_account_ids) :
+      "arn:aws:iam::${account_id}:role/${var.cross_account_role_name}"
+    ]
+  }
+}
+
+# Policy for deployment operations (used after infrastructure is created)
 data "aws_iam_policy_document" "github_actions_deployment" {
   statement {
     sid    = "TerraformStateObjectAccess"
@@ -45,6 +169,15 @@ data "aws_iam_policy_document" "github_actions_deployment" {
       "arn:aws:iam::${account_id}:role/${var.cross_account_role_name}"
     ]
   }
+}
+
+resource "aws_iam_policy" "github_actions_infrastructure" {
+  name        = "${var.github_actions_iam_role_name}-infrastructure-policy"
+  description = "Policy for GitHub Actions to manage infrastructure resources (S3, IAM, OIDC)"
+  policy      = data.aws_iam_policy_document.github_actions_infrastructure.json
+  tags = merge(local.common_tags, {
+    Name = "GitHub Actions Infrastructure Policy"
+  })
 }
 
 resource "aws_iam_policy" "github_actions_deployment" {
@@ -91,6 +224,11 @@ resource "aws_iam_role" "github_actions_oidc" {
   tags = merge(local.common_tags, {
     Name = "GitHub Actions OIDC Role"
   })
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_infrastructure" {
+  role       = aws_iam_role.github_actions_oidc.name
+  policy_arn = aws_iam_policy.github_actions_infrastructure.arn
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_deployment" {
