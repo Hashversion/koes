@@ -105,41 +105,6 @@ data "aws_iam_policy_document" "github_actions_infrastructure" {
   }
 }
 
-# Policy for deployment operations (used after infrastructure is created)
-data "aws_iam_policy_document" "github_actions_deployment" {
-  statement {
-    sid    = "TerraformStateObjectAccess"
-    effect = "Allow"
-    actions = [
-      "s3:GetObject",
-      "s3:PutObject",
-      "s3:DeleteObject"
-    ]
-    resources = ["arn:aws:s3:::${var.terraform_state_bucket}/*"]
-  }
-
-  statement {
-    sid    = "TerraformStateBucketAccess"
-    effect = "Allow"
-    actions = [
-      "s3:ListBucket",
-      "s3:GetBucketLocation",
-      "s3:GetBucketVersioning"
-    ]
-    resources = ["arn:aws:s3:::${var.terraform_state_bucket}"]
-  }
-
-  statement {
-    sid     = "CrossAccountDeploymentAccess"
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-    resources = [
-      for account_id in values(var.env_account_ids) :
-      "arn:aws:iam::${account_id}:role/${var.cross_account_role_name}"
-    ]
-  }
-}
-
 resource "aws_iam_policy" "github_actions_infrastructure" {
   name        = "${var.github_actions_iam_role_name}-infrastructure-policy"
   description = "Policy for GitHub Actions to manage infrastructure resources (S3, IAM, OIDC)"
@@ -149,14 +114,6 @@ resource "aws_iam_policy" "github_actions_infrastructure" {
   })
 }
 
-resource "aws_iam_policy" "github_actions_deployment" {
-  name        = "${var.github_actions_iam_role_name}-deployment-policy"
-  description = "Policy for GitHub Actions to manage Terraform state and assume cross-account deployment roles"
-  policy      = data.aws_iam_policy_document.github_actions_deployment.json
-  tags = merge(local.common_tags, {
-    Name = "GitHub Actions Deployment Policy"
-  })
-}
 
 resource "aws_iam_role" "github_actions_oidc" {
   name        = var.github_actions_iam_role_name
@@ -204,7 +161,3 @@ resource "aws_iam_role_policy_attachment" "github_actions_infrastructure" {
   policy_arn = aws_iam_policy.github_actions_infrastructure.arn
 }
 
-resource "aws_iam_role_policy_attachment" "github_actions_deployment" {
-  role       = aws_iam_role.github_actions_oidc.name
-  policy_arn = aws_iam_policy.github_actions_deployment.arn
-}
