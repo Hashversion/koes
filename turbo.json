@@ -15,7 +15,7 @@
     },
 
     "clean": {
-      "cache": false,
+      "cache": false
     },
     "dev": {
       "cache": false,
