@@ -1,13 +1,20 @@
 packages:
   - apps/*
   - packages/*
+allowBuilds:
+  lefthook: true
+  sharp: true
 
 catalog:
-  next: 16.1.0
-  react: 19.2.3
-  react-dom: 19.2.3
-  typescript: 5.9.2
+  "tailwindcss": ^4.1.18
+  typescript: 5.9.3
 
-onlyBuiltDependencies:
-  - lefthook
-  - sharp
+catalogs:
+  next:
+    "@next/eslint-plugin-next": 16.2.4
+    next: 16.2.4
+  react:
+    "@types/react": 19.2.14
+    "@types/react-dom": 19.2.3
+    react: 19.2.5
+    react-dom: 19.2.5

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "next build",
+    "clean": "rimraf node_modules",
     "dev": "next dev --port 3000",
     "lint": "eslint --max-warnings 0",
     "start": "pnpm dlx serve@latest out",
@@ -13,18 +14,18 @@
   "dependencies": {
     "@repo/ui": "workspace:*",
     "motion": "^12.23.27",
-    "next": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:"
+    "next": "catalog:next",
+    "react": "catalog:react",
+    "react-dom": "catalog:react"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2",
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.4",
     "typescript": "catalog:"
   }
 }
