@@ -1,0 +1,4 @@
+[tools]
+node = "24.15.0"
+aws-cli = "2.34.43"
+terraform = "1.15.2"
