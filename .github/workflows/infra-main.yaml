@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - "infra/terraform/main/**"
+      - "infra/aws/main/**"
   pull_request:
     branches:
       - main
     paths:
-      - "infra/terraform/main/**"
+      - "infra/aws/main/**"
   workflow_dispatch:
 
 env:
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: infra/terraform/main
+        working-directory: infra/aws/main
     env:
       TF_VAR_aws_region: "ap-south-1"
       TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
@@ -43,7 +43,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{
+            env.GITHUB_ACTIONS_ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
@@ -68,7 +69,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           name: terraform-plan-main
-          path: infra/terraform/main/tfplan
+          path: infra/aws/main/tfplan
           retention-days: 1
 
   terraform-apply:
@@ -78,7 +79,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     defaults:
       run:
-        working-directory: infra/terraform/main
+        working-directory: infra/aws/main
     env:
       TF_VAR_aws_region: "ap-south-1"
       TF_VAR_terraform_state_bucket: ${{ secrets.TF_VAR_terraform_state_bucket }}
@@ -93,7 +94,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{
+            env.GITHUB_ACTIONS_ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
@@ -105,7 +107,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform-plan-main
-          path: infra/terraform/main
+          path: infra/aws/main
 
       - name: Terraform Init
         run: terraform init
