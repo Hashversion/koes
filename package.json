@@ -6,7 +6,7 @@
     "build": "turbo run build",
     "clean": "turbo clean && rimraf node_modules .turbo",
     "dev": "turbo run dev",
-    "format": "oxfmt",
+    "fmt": "oxfmt",
     "postinstall": "lefthook install",
     "lint": "turbo run lint",
     "static:build": "turbo build -F static",
@@ -22,8 +22,8 @@
     "turbo": "^2.9.9",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.33.3",
   "engines": {
     "node": ">=22"
-  }
+  },
+  "packageManager": "pnpm@10.33.3"
 }
