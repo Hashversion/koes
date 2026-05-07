@@ -33,6 +33,8 @@ jobs:
       TF_VAR_aws_region: "ap-south-1"
       TF_VAR_main_account_id: ${{secrets.AWS_MAIN_ACCOUNT_ID}}
       TF_VAR_dev_account_id: ${{secrets.AWS_DEV_ACCOUNT_ID}}
+      TF_VAR_s3_bucket_name: ${{secrets.S3_STATIC_BUCKET_NAME}}
+      TF_VAR_cloudflare_api_token: ${{secrets.CLOUDFLARE_API_TOKEN}}
 
     steps:
       - name: Checkout code
@@ -82,6 +84,8 @@ jobs:
       TF_VAR_aws_region: "ap-south-1"
       TF_VAR_main_account_id: ${{secrets.AWS_MAIN_ACCOUNT_ID}}
       TF_VAR_dev_account_id: ${{secrets.AWS_DEV_ACCOUNT_ID}}
+      TF_VAR_s3_bucket_name: ${{secrets.S3_STATIC_BUCKET_NAME}}
+      TF_VAR_cloudflare_api_token: ${{secrets.CLOUDFLARE_API_TOKEN}}
 
     steps:
       - name: Checkout code

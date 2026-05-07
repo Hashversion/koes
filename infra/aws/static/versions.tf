@@ -7,6 +7,11 @@ terraform {
       version = "~> 6.28.0"
     }
 
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
+
     tls = {
       source  = "hashicorp/tls"
       version = "~>4.1"
@@ -28,4 +33,8 @@ provider "aws" {
   assume_role {
     role_arn = "arn:aws:iam::${var.dev_account_id}:role/GitHubActionsCrossAccountDeployRole"
   }
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }

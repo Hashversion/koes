@@ -1,0 +1,22 @@
+data "cloudflare_ip_ranges" "this" {}
+
+locals {
+  cloudflare_ips = concat(
+    data.cloudflare_ip_ranges.this.ipv4_cidrs,
+    data.cloudflare_ip_ranges.this.ipv6_cidrs
+  )
+}
+
+data "cloudflare_zone" "koes_site" {
+  name = "koes.site"
+}
+
+resource "cloudflare_dns_record" "koes_static" {
+  zone_id = data.cloudflare_zone.koes_site.zone_id
+  name    = "@"
+  type    = "CNAME"
+  content = aws_s3_bucket_website_configuration.koes_site.website_endpoint
+  ttl     = 1
+  proxied = true
+  tags    = merge(local.common_tags)
+}

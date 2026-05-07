@@ -11,3 +11,12 @@ variable "main_account_id" {
 variable "dev_account_id" {
   type = string
 }
+
+variable "s3_bucket_name" {
+  type = string
+}
+
+variable "cloudflare_api_token" {
+  type = string
+}
+
