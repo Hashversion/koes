@@ -1,9 +1,6 @@
 resource "aws_s3_bucket" "koes_static" {
   bucket = var.s3_bucket_name
 
-  lifecycle {
-    prevent_destroy = true
-  }
 
   tags = merge(local.common_tags)
 }
