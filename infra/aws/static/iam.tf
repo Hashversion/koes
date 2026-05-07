@@ -5,7 +5,7 @@ resource "aws_iam_role" "cross_account_deploy" {
     Statement = [{
       Effect = "Allow",
       Principal = {
-        AWS = "arn:aws:iam::${var.main_account_id}:root"
+        AWS = "arn:aws:iam::${var.main_account_id}:role/GitHubActionsOIDCRole"
       },
       Action = "sts:AssumeRole",
     }],

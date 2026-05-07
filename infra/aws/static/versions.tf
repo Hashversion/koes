@@ -13,10 +13,19 @@ terraform {
     }
   }
 
+  backend "s3" {
+    bucket       = "koes-terraform-state"
+    key          = "dev/static/terraform.tfstate"
+    region       = "ap-south-1"
+    use_lockfile = true
+    encrypt      = true
+  }
+
 }
 
 provider "aws" {
-  region  = var.aws_region
-  profile = "koes-dev"
-
+  region = var.aws_region
+  assume_role {
+    role_arn = "arn:aws:iam::${var.dev_account_id}:role/GitHubActionsCrossAccountDeployRole"
+  }
 }

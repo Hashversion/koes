@@ -1,0 +1,112 @@
+name: Terraform - AWS Static App Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "infra/aws/static/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "infra/aws/static/**"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: "ap-south-1"
+  GITHUB_ACTIONS_ROLE_NAME: "GitHubActionsOIDCRole"
+  TF_VERSION: "1.14.3"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan - Main
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/aws/static
+    env:
+      TF_VAR_aws_region: "ap-south-1"
+      TF_VAR_main_account_id: ${{secrets.AWS_MAIN_ACCOUNT_ID}}
+      TF_VAR_dev_account_id: ${{secrets.AWS_DEV_ACCOUNT_ID}}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{
+            env.GITHUB_ACTIONS_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          name: terraform-plan-main
+          path: infra/aws/static/tfplan
+          retention-days: 1
+
+  terraform-apply:
+    name: Terraform Apply - Main
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    defaults:
+      run:
+        working-directory: infra/aws/static
+    env:
+      TF_VAR_aws_region: "ap-south-1"
+      TF_VAR_main_account_id: ${{secrets.AWS_MAIN_ACCOUNT_ID}}
+      TF_VAR_dev_account_id: ${{secrets.AWS_DEV_ACCOUNT_ID}}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{
+            env.GITHUB_ACTIONS_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan-main
+          path: infra/aws/static
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply tfplan
