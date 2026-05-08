@@ -13,7 +13,7 @@ data "cloudflare_zone" "koes_site" {
 
 resource "cloudflare_dns_record" "koes_static" {
   zone_id = data.cloudflare_zone.koes_site.zone_id
-  name    = "@"
+  name    = "static"
   type    = "CNAME"
   content = aws_s3_bucket_website_configuration.koes_static.website_endpoint
   ttl     = 1
