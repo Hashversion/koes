@@ -1,4 +1,4 @@
-const CDN_URL = "https://koes.site";
+const CDN_URL = "https://static.koes.site";
 
 type ImageLoaderProps = {
   src: string;
