@@ -11,8 +11,8 @@ catalog:
 
 catalogs:
   next:
-    "@next/eslint-plugin-next": 16.2.5
-    next: 16.2.5
+    "@next/eslint-plugin-next": 16.2.6
+    next: 16.2.6
   react:
     "@types/react": 19.2.14
     "@types/react-dom": 19.2.3
