@@ -72,3 +72,27 @@ resource "cloudflare_ruleset" "security_headers" {
     }
   }]
 }
+
+resource "cloudflare_ruleset" "nextjs_image_loader_r2" {
+  zone_id = var.cloudflare_zone_id
+  name    = "Next.js Custom Image Loader Custom Paths :: R2"
+  kind    = "zone"
+  phase   = "http_request_transform"
+
+  rules = [{
+    ref         = "url_rewrite_nextjs_img"
+    description = "Next.js image loader rewrite /img -> /cdn-cgi/image"
+    enable      = true
+
+    expression = "(starts_with(http.request.uri.path, \"/img\")) and (not (any(http.request.headers[\"via\"][*] contains \"image-resizing\")))"
+
+    action = "rewrite"
+    action_parameters = {
+      uri = {
+        path = {
+          expression = "concat(\"/cdn-cgi/image\", substring(http.request.uri.path, 4))"
+        }
+      }
+    }
+  }]
+}
