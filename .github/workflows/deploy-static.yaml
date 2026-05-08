@@ -66,6 +66,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_DEV_ACCOUNT_ID }}:role/${{ env.CROSS_ACCOUNT_ROLE_NAME }}
           role-chaining: true
+          role-skip-session-tagging: true
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Sync exported site to S3
