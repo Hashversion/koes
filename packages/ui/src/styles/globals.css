@@ -3,6 +3,7 @@
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
+  --font-gehaks: var(--font-gehaks-sans);
 }
 
 @layer base {
@@ -13,4 +14,9 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+}
+
+@utility text-trim {
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
 }

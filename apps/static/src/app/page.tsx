@@ -14,7 +14,7 @@ export default function Home() {
               height={36}
               loading="eager"
             />
-            <h1 className="text-3xl font-semibold">KOES</h1>
+            <h1 className="text-trim font-gehaks text-3xl font-medium">KOES</h1>
           </div>
         </div>
       </header>
