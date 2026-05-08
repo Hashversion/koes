@@ -20,7 +20,9 @@ export default defineConfig({
     "^@/app/(.*)$",
     "^[.]",
   ],
-  sortTailwindcss: {},
+  sortTailwindcss: {
+    functions: ["clsx", "cn"],
+  },
   sortPackageJson: true,
   ignorePatterns: [],
 });
