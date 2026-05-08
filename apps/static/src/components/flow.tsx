@@ -8,7 +8,7 @@ export function Flow() {
 
   return (
     <section className="m-4">
-      <div className="mx-auto h-[calc(100vh-132px)] w-full overflow-hidden rounded-[36] border border-neutral-800 bg-neutral-900 [corner-space:squircle]">
+      <div className="corner-squircle mx-auto h-[calc(100vh-132px)] w-full overflow-hidden rounded-[42] border border-neutral-800 bg-neutral-900">
         <ReactFlow
           nodes={nodes}
           edges={edges}
