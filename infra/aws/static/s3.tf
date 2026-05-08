@@ -58,7 +58,7 @@ resource "aws_s3_bucket_website_configuration" "koes_static" {
   }
 
   error_document {
-    key = "error.html"
+    key = "404.html"
   }
 }
 
