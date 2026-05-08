@@ -1,0 +1,78 @@
+name: Deploy Static Site
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/static/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+      - ".github/workflows/deploy-static.yaml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-static-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: "ap-south-1"
+  NODE_VERSION: "22"
+  PNPM_VERSION: "10.33.3"
+  GITHUB_ACTIONS_ROLE_NAME: "GitHubActionsOIDCRole"
+  CROSS_ACCOUNT_ROLE_NAME: "GitHubActionsCrossAccountDeployRole"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and Deploy Static Site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build static site
+        run: pnpm static:build
+
+      - name: Configure AWS credentials for main account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure AWS credentials for static site account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_DEV_ACCOUNT_ID }}:role/${{ env.CROSS_ACCOUNT_ROLE_NAME }}
+          role-chaining: true
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync exported site to S3
+        run: aws s3 sync apps/static/out/ s3://${{ secrets.S3_STATIC_BUCKET_NAME }}/ --delete
+
+      - name: Set cache headers for HTML
+        run: aws s3 cp apps/static/out/ s3://${{ secrets.S3_STATIC_BUCKET_NAME }}/ --recursive --exclude "*" --include "*.html" --cache-control "no-cache, no-store, must-revalidate"
+
+      - name: Set cache headers for immutable Next.js assets
+        run: aws s3 cp apps/static/out/_next/static/ s3://${{ secrets.S3_STATIC_BUCKET_NAME }}/_next/static/ --recursive --cache-control "public, max-age=31536000, immutable"
