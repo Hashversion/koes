@@ -1,0 +1,4 @@
+main_account_id      = "000000000000"
+dev_account_id       = "111111111111"
+s3_bucket_name       = "static.koes.site"
+cloudflare_api_token = ""

@@ -1,0 +1,11 @@
+aws_region             = "ap-south-1"
+terraform_state_bucket = "koes-terraform-state"
+env_account_ids = {
+  "dev"   = "111111111111"
+  "stage" = "222222222222"
+  "prod"  = "333333333333"
+}
+github_repo_owner            = "hashversion"
+github_repo_name             = "koes"
+github_actions_iam_role_name = "GitHubActionsOIDCRole"
+cross_account_role_name      = "GitHubActionsCrossAccountDeployRole"
