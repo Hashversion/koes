@@ -5,6 +5,7 @@ const nextConfig = {
   poweredByHeader: false,
   typedRoutes: true,
   output: "export",
+  allowedDevOrigins: ["static.koes.localhost", "*.static.koes.localhost"],
   images: {
     loader: "custom",
     loaderFile: "./image-loader.ts",

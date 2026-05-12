@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "clean": "rimraf node_modules",
-    "dev": "next dev --port 3000",
+    "clean": "rimraf node_modules out .turbo .next",
+    "dev": "portless",
+    "dev:app": "next dev",
     "lint": "eslint --max-warnings 0",
     "start": "pnpm dlx serve@latest out",
     "typecheck": "next typegen && tsc --noEmit"
@@ -31,5 +32,9 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.4",
     "typescript": "catalog:"
+  },
+  "portless": {
+    "name": "static.koes",
+    "script": "dev:app"
   }
 }
