@@ -12,6 +12,17 @@ on:
       - "pnpm-workspace.yaml"
       - "turbo.json"
       - ".github/workflows/deploy-static.yaml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "apps/static/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+      - ".github/workflows/deploy-static.yaml"
   workflow_dispatch:
 
 concurrency:
@@ -56,12 +67,14 @@ jobs:
         run: pnpm static:build
 
       - name: Configure AWS credentials for main account
+        if: github.event_name != 'pull_request'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_MAIN_ACCOUNT_ID }}:role/${{ env.GITHUB_ACTIONS_ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Configure AWS credentials for static site account
+        if: github.event_name != 'pull_request'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_DEV_ACCOUNT_ID }}:role/${{ env.CROSS_ACCOUNT_ROLE_NAME }}
@@ -70,10 +83,13 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Sync exported site to S3
+        if: github.event_name != 'pull_request'
         run: aws s3 sync apps/static/out/ s3://${{ secrets.S3_STATIC_BUCKET_NAME }}/ --delete
 
       - name: Set cache headers for HTML
+        if: github.event_name != 'pull_request'
         run: aws s3 cp apps/static/out/ s3://${{ secrets.S3_STATIC_BUCKET_NAME }}/ --recursive --exclude "*" --include "*.html" --cache-control "no-cache, no-store, must-revalidate"
 
       - name: Set cache headers for immutable Next.js assets
+        if: github.event_name != 'pull_request'
         run: aws s3 cp apps/static/out/_next/static/ s3://${{ secrets.S3_STATIC_BUCKET_NAME }}/_next/static/ --recursive --cache-control "public, max-age=31536000, immutable"
