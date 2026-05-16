@@ -1,5 +1,9 @@
 terraform {
+<<<<<<< HEAD
   required_version = "~> 1.15.2"
+=======
+  required_version = "~> 1.12"
+>>>>>>> parent of b36c005 (chore(deps): update terraform hashicorp/terraform to ~> 1.15 (#8))
 
   required_providers {
     aws = {
