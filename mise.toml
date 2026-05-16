@@ -1,8 +1,8 @@
 [tools]
 node = "24.15.0"
-aws = "2.34.44"
+aws = "2.34.45"
 granted = "0.39.0"
 terraform = "1.15.2"
-terragrunt = "1.0.3"
+terragrunt = "1.0.4"
 tflint = "0.62.0"
 tfsec = "1.28.14"
