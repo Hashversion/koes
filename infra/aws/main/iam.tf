@@ -39,6 +39,7 @@ data "aws_iam_policy_document" "github_actions_infrastructure" {
       "iam:CreateOpenIDConnectProvider",
       "iam:GetOpenIDConnectProvider",
       "iam:UpdateOpenIDConnectProvider",
+      "iam:UpdateOpenIDConnectProviderThumbprint",
       "iam:DeleteOpenIDConnectProvider",
       "iam:ListOpenIDConnectProviders",
       "iam:TagOpenIDConnectProvider",
