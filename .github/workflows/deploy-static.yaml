@@ -32,7 +32,6 @@ concurrency:
 env:
   AWS_REGION: "ap-south-1"
   NODE_VERSION: "22"
-  PNPM_VERSION: "10.33.3"
   GITHUB_ACTIONS_ROLE_NAME: "GitHubActionsOIDCRole"
   CROSS_ACCOUNT_ROLE_NAME: "GitHubActionsCrossAccountDeployRole"
 
@@ -51,8 +50,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
