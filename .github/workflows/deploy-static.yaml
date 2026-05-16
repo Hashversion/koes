@@ -12,6 +12,17 @@ on:
       - "pnpm-workspace.yaml"
       - "turbo.json"
       - ".github/workflows/deploy-static.yaml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "apps/static/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+      - ".github/workflows/deploy-static.yaml"
   workflow_dispatch:
 
 concurrency:
@@ -21,17 +32,15 @@ concurrency:
 env:
   AWS_REGION: "ap-south-1"
   NODE_VERSION: "22"
-  PNPM_VERSION: "10.33.3"
   GITHUB_ACTIONS_ROLE_NAME: "GitHubActionsOIDCRole"
   CROSS_ACCOUNT_ROLE_NAME: "GitHubActionsCrossAccountDeployRole"
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
-  deploy:
-    name: Build and Deploy Static Site
+  build:
+    name: Build Static Site
     runs-on: ubuntu-latest
 
     steps:
@@ -40,8 +49,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,6 +61,30 @@ jobs:
 
       - name: Build static site
         run: pnpm static:build
+
+      - name: Upload static site artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-site-build
+          path: apps/static/out
+          retention-days: 1
+
+  deploy:
+    name: Deploy Static Site
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name != 'pull_request'
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download static site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: static-site-build
+          path: apps/static/out
 
       - name: Configure AWS credentials for main account
         uses: aws-actions/configure-aws-credentials@v4
