@@ -22,7 +22,7 @@ on:
 env:
   AWS_REGION: "ap-south-1"
   GITHUB_ACTIONS_ROLE_NAME: "GitHubActionsOIDCRole"
-  TF_VERSION: "1.14.3"
+  TF_VERSION: "1.15.2"
 
 permissions:
   id-token: write
